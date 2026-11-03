@@ -1,4 +1,4 @@
-export default function Register() {
+export default function RegisterPage() {
 	return (
 		<div>
 			<h1>This is Register component</h1>

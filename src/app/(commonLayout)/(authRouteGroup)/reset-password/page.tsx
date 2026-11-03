@@ -1,4 +1,4 @@
-export default function ResetPassword() {
+export default function ResetPasswordPage() {
 	return (
 		<div>
 			<h1>This is ResetPassword component</h1>
