@@ -1,7 +1,15 @@
-export default function NgosPage() {
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { Suspense } from "react";
+
+async function NGOsContent() {
+	await new Promise((r) => setTimeout(r, 2000)); // test-এর জন্য, পরে মুছে দিও
+	return <h1>NGOs</h1>;
+}
+
+export default function NGOsPage() {
 	return (
-		<div>
-			<h1>This is Ngos component</h1>
-		</div>
+		<Suspense fallback={<LoadingSpinner text="Loading NGOs..." />}>
+			<NGOsContent />
+		</Suspense>
 	);
 }
