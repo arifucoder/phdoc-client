@@ -12,6 +12,7 @@
 		"@tanstack/react-form": "^1.33.5",
 		"@tanstack/react-form-nextjs": "^1.33.5",
 		"@tanstack/react-query": "^5.105.1",
+		"@tanstack/react-query-devtools": "^5.105.3",
 		"axios": "^1.21.0",
 		"class-variance-authority": "^0.7.1",
 		"cn": "^0.5.1",
