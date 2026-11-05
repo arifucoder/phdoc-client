@@ -45,7 +45,15 @@ const request = async <TData>(
 		});
 		return response.data;
 	} catch (error) {
-		console.error(`${method} request to ${endpoint} failed:`, error);
+		// পুরো error log কোরো না: error.config.data-তে request body (password) থাকে
+		if (axios.isAxiosError(error)) {
+			console.error(`[httpClient] ${method} ${endpoint} failed`, {
+				status: error.response?.status,
+				code: error.code,
+			});
+		} else {
+			console.error(`[httpClient] ${method} ${endpoint} failed`, error instanceof Error ? error.message : error);
+		}
 		throw error;
 	}
 };
