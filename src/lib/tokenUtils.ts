@@ -1,20 +1,10 @@
-import jwt from "jsonwebtoken";
+// src/lib/tokenUtils.ts
 import "server-only";
-import { AUTH_COOKIES, setCookie } from "./cookieUtils";
+import { AUTH_COOKIES, SESSION_TOKEN_MAX_AGE } from "./cookieConfig";
+import { setCookie } from "./cookieUtils";
+import { getTokenSecondsRemaining } from "./jwtUtils";
 
-// backend-এর BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN (604800 = 7 দিন)-এর সাথে sync রাখো
-const SESSION_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
-
-export const getTokenSecondsRemaining = (token: string): number => {
-	// decode শুধু payload পড়ে, signature verify করে না। এখানে শুধু exp জানা দরকার।
-	const payload = jwt.decode(token);
-
-	if (!payload || typeof payload === "string" || typeof payload.exp !== "number") {
-		return 0;
-	}
-
-	return Math.max(payload.exp - Math.floor(Date.now() / 1000), 0);
-};
+export { getTokenSecondsRemaining };
 
 export const isTokenExpired = (token: string) => getTokenSecondsRemaining(token) === 0;
 
