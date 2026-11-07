@@ -72,3 +72,6 @@ export const getPostLoginRedirect = (role: UserRole, redirectPath?: unknown): st
 
 	return getDefaultDashboardRoute(role);
 };
+
+// "SUPER_ADMIN" → "super admin" (CSS capitalize দিয়ে দেখাবে "Super Admin")
+export const formatRole = (role: UserRole) => role.toLowerCase().replaceAll("_", " ");
