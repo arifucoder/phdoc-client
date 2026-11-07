@@ -9,6 +9,7 @@ import { useState } from "react";
 import DashboardNav from "./DashboardNav";
 import DashboardUserInfo from "./DashboardUserInfo";
 import NotificationDropdown from "./NotificationDropdown";
+import UserDropdown from "./UserDropdown";
 
 export default function DashboardNavbar({ user, navItems, dashboardHome }: IDashboardShellProps) {
 	const [open, setOpen] = useState(false);
@@ -51,7 +52,7 @@ export default function DashboardNavbar({ user, navItems, dashboardHome }: IDash
 
 			<div className="ml-auto flex items-center gap-3">
 				<NotificationDropdown />
-				<DashboardUserInfo user={user} />
+				<UserDropdown user={user} />
 			</div>
 		</header>
 	);
