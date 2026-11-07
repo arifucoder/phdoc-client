@@ -1,4 +1,5 @@
 import type { NavIconName } from "@/lib/iconMapper";
+import type { ISessionUser } from "@/types/auth.types";
 
 export interface NavItem {
 	title: string;
@@ -9,4 +10,11 @@ export interface NavItem {
 export interface NavSection {
 	title?: string;
 	items: NavItem[];
+}
+
+// layout → Sidebar/Navbar-এ একই props যায়
+export interface IDashboardShellProps {
+	user: ISessionUser;
+	navItems: NavSection[];
+	dashboardHome: string;
 }
