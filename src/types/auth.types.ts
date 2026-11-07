@@ -24,3 +24,10 @@ export interface ILoginResponse {
 	url?: string;
 	user: IAuthUser;
 }
+
+// UI-তে যতটুকু লাগে শুধু ততটুকু (client-এ কম data যায়)
+export interface ISessionUser {
+	name: string;
+	email: string;
+	role: UserRole;
+}
