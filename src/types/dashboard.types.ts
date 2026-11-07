@@ -18,3 +18,11 @@ export interface IDashboardShellProps {
 	navItems: NavSection[];
 	dashboardHome: string;
 }
+
+// backend-এর prisma enum AppointmentStatus-এর সাথে মিল রাখো
+export type AppointmentStatus = "SCHEDULED" | "INPROGRESS" | "COMPLETED" | "CANCELED";
+
+export interface PieChartData {
+	status: AppointmentStatus;
+	count: number;
+}
