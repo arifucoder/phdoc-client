@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import DashboardNav from "./DashboardNav";
 import DashboardUserInfo from "./DashboardUserInfo";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function DashboardNavbar({ user, navItems, dashboardHome }: IDashboardShellProps) {
 	const [open, setOpen] = useState(false);
@@ -48,7 +49,8 @@ export default function DashboardNavbar({ user, navItems, dashboardHome }: IDash
 				Phdoc
 			</Link>
 
-			<div className="ml-auto">
+			<div className="ml-auto flex items-center gap-3">
+				<NotificationDropdown />
 				<DashboardUserInfo user={user} />
 			</div>
 		</header>
