@@ -1,8 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { formatRole } from "@/lib/authUtils";
 import type { ISessionUser } from "@/types/auth.types";
-
-// "SUPER_ADMIN" → "super admin"
-const formatRole = (role: ISessionUser["role"]) => role.toLowerCase().replace("_", " ");
 
 export default function DashboardUserInfo({ user }: { user: ISessionUser }) {
 	return (
