@@ -26,3 +26,8 @@ export interface PieChartData {
 	status: AppointmentStatus;
 	count: number;
 }
+
+export interface BarChartData {
+	month: string;
+	count: number;
+}
