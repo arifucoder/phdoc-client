@@ -2,6 +2,8 @@
 
 import { getPostLoginRedirect } from "@/lib/authUtils";
 import { httpClient } from "@/lib/axios/httpClient";
+import { AUTH_COOKIES } from "@/lib/cookieConfig";
+import { clearAuthCookies, getCookie } from "@/lib/cookieUtils";
 import { setAuthCookies } from "@/lib/tokenUtils";
 import type { ApiErrorResponse } from "@/types/api.types";
 import type { ILoginResponse } from "@/types/auth.types";
@@ -65,4 +67,22 @@ export async function loginAction(payload: unknown, redirectPath?: unknown): Pro
 
 	// try/catch-এর বাইরে: NEXT_REDIRECT ধরে আবার throw করার hack লাগে না
 	redirect(targetPath);
+}
+
+export async function logoutAction(): Promise<void> {
+	const sessionToken = await getCookie(AUTH_COOKIES.sessionToken);
+
+	if (sessionToken) {
+		try {
+			// backend DB থেকে session মুছে দেয় → token চুরি হলেও আর কাজ করবে না
+			await httpClient.post("/auth/logout", undefined, {
+				headers: { Cookie: `${AUTH_COOKIES.sessionToken}=${sessionToken}` },
+			});
+		} catch {
+			// backend fail হলেও (httpClient নিজেই log করে) নিজের দিকের cookie মুছে logout করাতেই হবে
+		}
+	}
+
+	await clearAuthCookies();
+	redirect("/login");
 }
