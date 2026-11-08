@@ -4,35 +4,14 @@ import { getPostLoginRedirect } from "@/lib/authUtils";
 import { httpClient } from "@/lib/axios/httpClient";
 import { AUTH_COOKIES } from "@/lib/cookieConfig";
 import { clearAuthCookies, getCookie } from "@/lib/cookieUtils";
+import { getActionErrorMessage } from "@/lib/getActionErrorMessage";
 import { setAuthCookies } from "@/lib/tokenUtils";
 import type { ApiErrorResponse } from "@/types/api.types";
 import type { ILoginResponse } from "@/types/auth.types";
 import { loginZodSchema } from "@/zod/auth.validation";
-import axios from "axios";
 import { redirect } from "next/navigation";
 
-const GENERIC_ERROR = "Something went wrong. Please try again.";
 const EMAIL_NOT_VERIFIED = "Email not verified";
-
-const getErrorMessage = (error: unknown): string => {
-	if (axios.isAxiosError<ApiErrorResponse>(error)) {
-		const { response } = error;
-
-		if (!response) {
-			return error.code === "ECONNABORTED"
-				? "The server took too long to respond. Please try again."
-				: "Unable to reach the server. Please check your connection.";
-		}
-
-		// 5xx-এর ভেতরের details user-কে দেখানো হয় না
-		if (response.status >= 500) return GENERIC_ERROR;
-
-		return response.data?.message ?? GENERIC_ERROR;
-	}
-
-	console.error("[auth.actions]", error instanceof Error ? error.message : "Unknown error");
-	return GENERIC_ERROR;
-};
 
 // "use server" file-এর প্রতিটা export একটা public endpoint।
 // তাই input-কে unknown ধরে আবার validate করা হয়।
@@ -56,7 +35,7 @@ export async function loginAction(payload: unknown, redirectPath?: unknown): Pro
 
 		targetPath = data.user.needPasswordChange ? "/change-password" : getPostLoginRedirect(data.user.role, redirectPath);
 	} catch (error) {
-		const message = getErrorMessage(error);
+		const message = getActionErrorMessage(error, "auth.actions");
 
 		if (message !== EMAIL_NOT_VERIFIED) {
 			return { success: false, message };
