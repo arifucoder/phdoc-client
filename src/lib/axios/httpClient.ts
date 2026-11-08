@@ -1,6 +1,9 @@
+import { AUTH_COOKIES } from "@/lib/cookieConfig";
 import type { ApiResponse } from "@/types/api.types";
 import axios, { type AxiosInstance, type Method } from "axios";
+import { cookies } from "next/headers";
 import { connection } from "next/server";
+import "server-only";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -13,17 +16,35 @@ export interface ApiRequestOptions {
 	headers?: Record<string, string>;
 }
 
-// পরে cookie যোগ করার সময় শুধু এই function বদলাতে হবে
+// browser-এর cookie Next server-এ আসে, কিন্তু axios নিজে থেকে backend-এ পাঠায় না।
+// শুধু checkAuth-এর দরকারি দুটো cookie পাঠাই (সব cookie না)।
+// refreshToken পাঠাই না: ওটা শুধু refresh endpoint-এর জন্য, proxy সেটা সামলায়।
+const getAuthCookieHeader = async (): Promise<string | undefined> => {
+	const cookieStore = await cookies();
+
+	const pairs = [AUTH_COOKIES.accessToken, AUTH_COOKIES.sessionToken]
+		.map((name) => {
+			const value = cookieStore.get(name)?.value;
+			return value ? `${name}=${value}` : null;
+		})
+		.filter((pair): pair is string => pair !== null);
+
+	return pairs.length > 0 ? pairs.join("; ") : undefined;
+};
+
 const axiosInstance = async (): Promise<AxiosInstance> => {
 	// axios ভেতরে Date.now() ব্যবহার করে, যেটা Next.js চেনে না।
 	// connection() Next-কে বলে: এই request আসল request-time-এ চালাও, prerender কোরো না।
 	await connection();
+
+	const cookieHeader = await getAuthCookieHeader();
 
 	return axios.create({
 		baseURL: API_BASE_URL,
 		timeout: 30000,
 		headers: {
 			"Content-Type": "application/json",
+			...(cookieHeader && { Cookie: cookieHeader }),
 		},
 	});
 };
@@ -41,7 +62,7 @@ const request = async <TData>(
 			url: endpoint,
 			data,
 			params: options?.params,
-			headers: options?.headers,
+			headers: options?.headers, // এখানে Cookie দিলে (যেমন logoutAction) উপরেরটার বদলে এটা যায়
 		});
 		return response.data;
 	} catch (error) {
