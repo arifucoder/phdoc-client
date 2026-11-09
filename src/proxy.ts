@@ -1,8 +1,12 @@
 import { canAccessRoute, getDefaultDashboardRoute, getRouteOwner, isAuthRoute } from "@/lib/authUtils";
-import { AUTH_COOKIES, getAuthCookieOptions, SESSION_TOKEN_MAX_AGE } from "@/lib/cookieConfig";
+import {
+	AUTH_COOKIES,
+	getAuthCookieDeleteOptions,
+	getAuthCookieOptions,
+	SESSION_TOKEN_MAX_AGE,
+} from "@/lib/cookieConfig";
 import { getTokenSecondsRemaining, type IAccessTokenPayload, verifyAccessToken } from "@/lib/jwtUtils";
 import { type NextRequest, NextResponse } from "next/server";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const REFRESH_BEFORE_EXPIRY_SECONDS = 5 * 60; // মেয়াদ শেষের ৫ মিনিট আগেই refresh
@@ -130,7 +134,7 @@ const handleAuth = async (request: NextRequest): Promise<NextResponse> => {
 				response.cookies.set(name, value, getAuthCookieOptions(maxAge));
 			}
 		} else if (shouldClearCookies) {
-			for (const name of Object.values(AUTH_COOKIES)) response.cookies.delete(name);
+			for (const name of Object.values(AUTH_COOKIES)) response.cookies.delete(getAuthCookieDeleteOptions(name));
 		}
 		return response;
 	};
