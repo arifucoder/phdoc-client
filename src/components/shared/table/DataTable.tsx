@@ -10,19 +10,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { functionalUpdate, type SortDirection, type SortingState, useTable } from "@tanstack/react-table";
+import { functionalUpdate, type RowData, type SortDirection, type SortingState, useTable } from "@tanstack/react-table";
 import { cn } from "cn";
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { type DataTableColumnDef, dataTableFeatures } from "./dataTableFeatures";
 
-export interface DataTableRowActions<TData> {
+// TData extends RowData: row সবসময় object (TanStack Table v9 এটা চায়)
+export interface DataTableRowActions<TData extends RowData> {
 	onView?: (row: TData) => void;
 	onEdit?: (row: TData) => void;
 	onDelete?: (row: TData) => void;
 }
 
-interface DataTableProps<TData> {
+interface DataTableProps<TData extends RowData> {
 	data: TData[];
 	columns: DataTableColumnDef<TData>[];
 	getRowId: (row: TData) => string; // index-এর বদলে আসল id: delete-এর পর ভুল row-এ state যায় না
@@ -48,7 +49,9 @@ const toAriaSort = (direction: false | SortDirection) =>
 	direction === "asc" ? "ascending" : direction === "desc" ? "descending" : undefined;
 
 // row-এর শেষে "⋯" menu: যে action দেওয়া হয়েছে শুধু সেটাই দেখায়
-const createActionsColumn = <TData,>(actions: DataTableRowActions<TData>): DataTableColumnDef<TData> => ({
+const createActionsColumn = <TData extends RowData>(
+	actions: DataTableRowActions<TData>,
+): DataTableColumnDef<TData> => ({
 	id: "actions",
 	header: () => <span className="sr-only">Actions</span>,
 	enableSorting: false,
@@ -86,7 +89,7 @@ const createActionsColumn = <TData,>(actions: DataTableRowActions<TData>): DataT
 	),
 });
 
-export default function DataTable<TData>({
+export default function DataTable<TData extends RowData>({
 	data,
 	columns,
 	getRowId,

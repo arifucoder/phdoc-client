@@ -12,6 +12,7 @@ import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import { useMemo, useState } from "react";
+import type * as z from "zod";
 import { GENDER_OPTIONS } from "./doctorsTable.config";
 
 interface DoctorFormProps {
@@ -43,9 +44,14 @@ export default function DoctorForm({
 		[specialtiesResponse],
 	);
 
+	// দুই schema-র input/output একই, তাই একটা common type-এ রাখলাম
+	const formSchema: z.ZodType<DoctorFormValues, DoctorFormValues> = isCreate
+		? createDoctorFormSchema
+		: editDoctorFormSchema;
+
 	const form = useForm({
 		defaultValues,
-		validators: { onChange: isCreate ? createDoctorFormSchema : editDoctorFormSchema },
+		validators: { onChange: formSchema },
 		onSubmit: ({ value }) => onSubmit(value),
 	});
 
