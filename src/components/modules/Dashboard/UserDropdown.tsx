@@ -14,11 +14,17 @@ import {
 import { formatRole } from "@/lib/authUtils";
 import type { ISessionUser } from "@/types/auth.types";
 import { useQueryClient } from "@tanstack/react-query";
-import { KeyRound, LoaderCircle, LogOut, User } from "lucide-react";
+import { KeyRound, LayoutDashboard, LoaderCircle, LogOut, User } from "lucide-react";
+
 import Link from "next/link";
 import { useTransition } from "react";
 
-export default function UserDropdown({ user }: { user: ISessionUser }) {
+interface UserDropdownProps {
+	user: ISessionUser;
+	dashboardHome?: string;
+}
+
+export default function UserDropdown({ user, dashboardHome }: UserDropdownProps) {
 	const queryClient = useQueryClient();
 	const [isLoggingOut, startTransition] = useTransition();
 
@@ -53,6 +59,14 @@ export default function UserDropdown({ user }: { user: ISessionUser }) {
 				<DropdownMenuSeparator />
 
 				{/* asChild: পুরো item-টাই link, keyboard-এ Enter দিলেও কাজ করে */}
+				{dashboardHome && (
+					<DropdownMenuItem asChild>
+						<Link href={dashboardHome}>
+							<LayoutDashboard />
+							Dashboard
+						</Link>
+					</DropdownMenuItem>
+				)}
 				<DropdownMenuItem asChild>
 					<Link href="/my-profile">
 						<User />

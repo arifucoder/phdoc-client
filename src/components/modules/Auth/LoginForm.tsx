@@ -6,11 +6,14 @@ import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { type ILoginPayload, loginZodSchema } from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
+import GoogleLoginButton from "./GoogleLoginButton";
+import OAuthErrorAlert from "./OAuthErrorAlert";
 
 const defaultValues: ILoginPayload = { email: "", password: "" };
 
@@ -47,7 +50,10 @@ export default function LoginForm() {
 				<CardDescription>Log in to your PH Doc account</CardDescription>
 			</CardHeader>
 
-			<CardContent>
+			<CardContent className="space-y-4">
+				<Suspense fallback={null}>
+					<OAuthErrorAlert />
+				</Suspense>
 				<form
 					noValidate
 					className="space-y-4"
@@ -113,6 +119,14 @@ export default function LoginForm() {
 						Log in
 					</AppSubmitButton>
 				</form>
+				<div className="relative">
+					<Separator />
+					<span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs uppercase text-muted-foreground">
+						or
+					</span>
+				</div>
+
+				<GoogleLoginButton />
 			</CardContent>
 
 			<CardFooter className="justify-center border-t pt-4">
