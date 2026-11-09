@@ -72,3 +72,41 @@ export const timeToMinutes = (time: string) => {
 	const [hours = 0, minutes = 0] = time.split(":").map(Number);
 	return hours * 60 + minutes;
 };
+
+const CLINIC_UTC_OFFSET = "+06:00";
+
+// ঢাকার আজকের তারিখ "YYYY-MM-DD" (browser যেখানেই থাকুক)
+export const getClinicToday = () => toClinicDateTimeParts(new Date().toISOString()).date;
+
+// "2026-11-08" → ঢাকার ওই দিনের রাত 12টা, ISO string।
+// Prisma DateTime শুধু তারিখ ("2026-11-08") নেয় না, পুরো ISO লাগে।
+export const clinicDayStartIso = (date: string) => new Date(`${date}T00:00:00${CLINIC_UTC_OFFSET}`).toISOString();
+
+// "2026-11-08" → "2026-11-09" (UTC-তে হিসাব, তাই timezone-এর প্রভাব নেই)
+export const addDaysToDateString = (date: string, days: number) => {
+	const value = new Date(`${date}T00:00:00Z`);
+	value.setUTCDate(value.getUTCDate() + days);
+	return value.toISOString().slice(0, 10);
+};
+
+// consultation page-এ রোগী কত দিন আগে পর্যন্ত slot দেখবে
+export const BOOKING_WINDOW_DAYS = 14;
+
+const dayPartsFormatter = new Intl.DateTimeFormat("en-GB", {
+	weekday: "short",
+	day: "numeric",
+	month: "short",
+	timeZone: CLINIC_TIME_ZONE,
+});
+
+// "2026-11-09" → { weekday: "Mon", day: "9", month: "Nov" } (দিনের chip-এর জন্য)
+// দুপুর 12টা ধরি: কোনো timezone-এই তারিখ সরে যায় না
+export const formatClinicDayParts = (date: string) => {
+	const parts = Object.fromEntries(
+		dayPartsFormatter
+			.formatToParts(new Date(`${date}T12:00:00${CLINIC_UTC_OFFSET}`))
+			.map(({ type, value: part }) => [type, part]),
+	);
+
+	return { weekday: parts.weekday ?? "", day: parts.day ?? "", month: parts.month ?? "" };
+};
