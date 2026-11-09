@@ -16,3 +16,6 @@ export const updateDoctor = async (id: string, payload: IUpdateDoctorPayload) =>
 	httpClient.patch<IDoctor>(`/doctors/${encodeURIComponent(id)}`, payload);
 
 export const deleteDoctor = async (id: string) => httpClient.delete<IDoctor>(`/doctors/${encodeURIComponent(id)}`);
+
+// public route: login ছাড়াও চলে। না পেলে backend 404 দেয়।
+export const getDoctorById = async (id: string) => httpClient.get<IDoctor>(`/doctors/${encodeURIComponent(id)}`);
