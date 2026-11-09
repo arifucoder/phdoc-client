@@ -1,3 +1,4 @@
+import { CONSULTATION_DEFAULTS, CONSULTATION_QUERY_KEYS } from "@/components/modules/Consultation/consultation.config";
 import DoctorsList from "@/components/modules/Consultation/DoctorsList";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { buildQueryString } from "@/lib/buildQueryString";
@@ -7,14 +8,12 @@ import { specialtiesQueryOptions } from "@/queries/specialty.queries";
 import { dehydrate, HydrationBoundary, noop } from "@tanstack/react-query";
 import { Suspense } from "react";
 
-// public consultation page-এ শুধু এগুলো চলবে
-const ALLOWED_QUERY_KEYS: ReadonlySet<string> = new Set(["page", "limit", "sortBy", "sortOrder", "searchTerm"]);
-const DEFAULTS = { page: "1", limit: "12" };
-
 type SearchParams = Record<string, string | string[] | undefined>;
 
+// server শুধু প্রথমবার data আনে (loading ছাড়া প্রথম render)।
+// এরপর filter বদলালে client-এর useQuery নিজেই আনে, server আবার চলে না।
 async function DoctorsSection({ searchParams }: { searchParams: Promise<SearchParams> }) {
-	const queryString = buildQueryString(await searchParams, ALLOWED_QUERY_KEYS, DEFAULTS);
+	const queryString = buildQueryString(await searchParams, CONSULTATION_QUERY_KEYS, CONSULTATION_DEFAULTS);
 	const queryClient = getQueryClient();
 
 	await Promise.all([
@@ -24,7 +23,7 @@ async function DoctorsSection({ searchParams }: { searchParams: Promise<SearchPa
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<DoctorsList queryString={queryString} />
+			<DoctorsList />
 		</HydrationBoundary>
 	);
 }
