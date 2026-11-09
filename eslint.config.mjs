@@ -7,6 +7,20 @@ const eslintConfig = defineConfig([
 	...nextVitals,
 	...nextTs,
 	...pluginQuery.configs["flat/recommended"],
+	{
+		rules: {
+			// "_" দিয়ে শুরু হওয়া নাম = ইচ্ছা করে ব্যবহার করা হয়নি
+			"@typescript-eslint/no-unused-vars": [
+				"warn",
+				{
+					varsIgnorePattern: "^_",
+					argsIgnorePattern: "^_",
+					destructuredArrayIgnorePattern: "^_",
+					ignoreRestSiblings: true,
+				},
+			],
+		},
+	},
 	// Override default ignores of eslint-config-next.
 	globalIgnores([
 		// Default ignores of eslint-config-next:
